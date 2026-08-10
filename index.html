@@ -11,11 +11,135 @@
 <link rel="preconnect" href="https://script.googleusercontent.com">
 <title>Budget e Patrimonio</title>
 <style>
-  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#3d5570; }
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#42546f; }
   iframe { width:100%; height:100%; border:none; display:block; }
+
+  #loader {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4b6b79 0%, #42546f 100%);
+    transition: opacity 0.4s ease;
+    z-index: 10;
+  }
+  #loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader-chart {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 70px;
+    margin-bottom: 22px;
+  }
+  .loader-chart .bar {
+    width: 12px;
+    border-radius: 5px;
+    background: #ffffff;
+    opacity: 0.92;
+    animation: crescita 1.4s ease-in-out infinite;
+  }
+  .loader-chart .b1 { height: 18px; animation-delay: 0s; }
+  .loader-chart .b2 { height: 30px; animation-delay: 0.12s; }
+  .loader-chart .b3 { height: 22px; animation-delay: 0.24s; }
+  .loader-chart .b4 { height: 44px; animation-delay: 0.36s; }
+  .loader-chart .b5 { height: 60px; animation-delay: 0.48s; }
+
+  @keyframes crescita {
+    0%, 100% { transform: scaleY(0.55); opacity: 0.55; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .loader-coin {
+    position: absolute;
+    top: -6px;
+    right: -2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #42546f;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, system-ui, sans-serif;
+    animation: rimbalza 1.4s ease-in-out infinite;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  @keyframes rimbalza {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .loader-text {
+    color: #ffffff;
+    font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.9;
+    min-height: 20px;
+    transition: opacity 0.25s ease;
+    text-align: center;
+    padding: 0 24px;
+  }
 </style>
 </head>
 <body>
-<iframe src="https://script.google.com/macros/s/AKfycbyAYgrgxGdtzkzULZKP9bdbXbw-WgmKZu26lkiIPHP1vWqimufadHFLTiQSRYcI0pXL/exec"></iframe>
+
+<div id="loader">
+  <div class="loader-chart">
+    <div class="bar b1"></div>
+    <div class="bar b2"></div>
+    <div class="bar b3"></div>
+    <div class="bar b4"></div>
+    <div class="bar b5"></div>
+    <div class="loader-coin">€</div>
+  </div>
+  <div class="loader-text" id="loader-text">Sto contando le monetine…</div>
+</div>
+
+<iframe id="app" src="https://script.google.com/macros/s/AKfycbyAYgrgxGdtzkzULZKP9bdbXbw-WgmKZu26lkiIPHP1vWqimufadHFLTiQSRYcI0pXL/exec"></iframe>
+
+<script>
+  var messaggi = [
+    "Sto contando le monetine…",
+    "Sveglio Google…",
+    "Aggiorno il portafoglio…",
+    "Verifico i tuoi investimenti…",
+    "Sincronizzo il salvadanaio…",
+    "Un attimo, sto facendo quadrare i conti…"
+  ];
+  var idx = 0;
+  var testoEl = document.getElementById('loader-text');
+  var giroTesti = setInterval(function () {
+    idx = (idx + 1) % messaggi.length;
+    testoEl.style.opacity = 0;
+    setTimeout(function () {
+      testoEl.textContent = messaggi[idx];
+      testoEl.style.opacity = 0.9;
+    }, 250);
+  }, 1700);
+
+  function nascondiLoader() {
+    clearInterval(giroTesti);
+    document.getElementById('loader').classList.add('hidden');
+  }
+
+  document.getElementById('app').addEventListener('load', nascondiLoader);
+  // Rete di sicurezza: se per qualche motivo l'evento "load" non arriva
+  // (capita a volte con contenuti cross-origin), nascondiamo comunque
+  // il loader dopo un tempo massimo ragionevole.
+  setTimeout(nascondiLoader, 8000);
+</script>
+
 </body>
 </html>
